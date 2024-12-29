@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tektur:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+.header {
+    background-color: brown;
+}
+
+#app {
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+    margin: 0;
+    font-size: 18px;
+    color: black;
+}
+
+.card p {
+    margin: 5px 0;
+    color: black;
+}
+
+.container {
+    max-width: 1170px;
+    margin-left: auto;  /* Делаем авто margin в контейнере шапки  */
+    margin-right: auto;
+    padding: 5px 0; /* Отступ с верху и с низу */
+}
+
+.header__container {
+
+    display: flex;
+    justify-content: space-between;
+
+    max-width: 1170px;
+    margin-left: auto;  /* Делаем авто margin в контейнере шапки  */
+    margin-right: auto;
+    padding: 5px 0; /* Отступ с верху и с низу */
+}
+
+a {
+    font-family: "Afacad Flux", serif;
+    font-weight: bold;
+    font-size: 20px;
+    text-decoration: none;
+    color: white;
+}
+
+p {
+    color: white;
+    font-family: "Afacad Flux", serif;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: bolder;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+}
+
+ul.nav__list {
+    padding: 0;
+    display: flex;
+    gap: 50px;
+}
+
+.nav__list a {
+    transition: color 0.3s;
+}
+
+.nav__list a:hover {
+    color: #2e5c2e;
+}
+
+.header__logo {
+}
+
+body {
+    background-color: #20202b;
+    margin: 0;
+    padding: 0;
+}
+.nav__list {
+    list-style-type: none;
+}
+
+.nav__item {
+    text-decoration: none;
+}
+
+.welcome__section {
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.welcome__content {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 30%;
+
+    border: 2px solid #007BFF; /* Толщина, стиль и цвет границы */
+    padding: 10px; /* Внутренний отступ для содержимого */
+    border-radius: 5px; /* Закругление углов (опционально) */
+    background-color: #3a3e4c; /* Цвет фона (опционально) */
+}
+
+.welcome__cards {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.welcome__section-playgame {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    border: 2px solid #007BFF; /* Толщина, стиль и цвет границы */
+    padding: 10px; /* Внутренний отступ для содержимого */
+    border-radius: 5px; /* Закругление углов (опционально) */
+    background-color: #3a3e4c; /* Цвет фона (опционально) */
+}
+
+.welcome__section-button {
+    margin-top: 20px;
+    display: grid;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.Game__button {
+    background: linear-gradient(45deg, #007BFF, #00D4FF); /* Градиентный фон */
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 25px; /* Закругленные углы */
+    cursor: pointer; /* Указатель мыши при наведении */
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4); /* Тень кнопки */
+    transition: all 0.3s ease; /* Плавный переход при наведении */
+}
+
+.Game__button:hover {
+    background: linear-gradient(45deg, #00D4FF, #007BFF); /* Меняем направление градиента */
+    transform: scale(1.1); /* Увеличиваем кнопку */
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.6); /* Усиливаем тень */
+}
+
+.Game__button:active {
+    transform: scale(1); /* Возвращаем размер при нажатии */
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.5); /* Уменьшаем тень */
+}
