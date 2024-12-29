@@ -6,13 +6,10 @@ const app = document.getElementById("app");
 const playersContainer = document.getElementById("players-container");
 const startButton = document.getElementById("start-game");
 const joinButton = document.querySelector(".Game__button:nth-child(2)");
-const sessionIdInput = document.createElement("input");
-sessionIdInput.placeholder = "Enter Session ID";
-sessionIdInput.className = "session-input";
-sessionIdInput.style.display = "none";
+const sessionIdInput = document.getElementById("sessionField");
 
 // Добавляем поле ввода для ID сессии под кнопкой "Join Game"
-joinButton.insertAdjacentElement("afterend", sessionIdInput);
+// joinButton.insertAdjacentElement("afterend", sessionIdInput);
 
 // Событие для создания игры
 startButton.addEventListener("click", () => {
@@ -22,6 +19,7 @@ startButton.addEventListener("click", () => {
 // Событие для подключения к игре
 joinButton.addEventListener("click", () => {
     const sessionId = sessionIdInput.value.trim(); // Получаем введенный ID сессии
+    
     const playerName = prompt("Enter your name:");
 
     if (sessionId && playerName) {
