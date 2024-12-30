@@ -2,6 +2,8 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const authRouter = require('./public/authRouter');
+const mongoose = require("mongoose")
 
 // Инициализация приложения
 const app = express();
@@ -10,6 +12,17 @@ const io = new Server(server);
 
 // Хранение игровых сессий
 const gameSessions = {};
+
+// // База данных Oracle
+// const oracledb = require('oracledb');
+// const bcrypt = require('bcrypt');
+// const bodyParser = require('body-parser');
+
+// oracledb.initOracleClient(); // Инициализация клиента Oracle
+
+// Парсер json
+app.use(express.json());
+app.use("/auth", authRouter);
 
 // Обслуживание статических файлов из папки public
 app.use(express.static(path.join(__dirname, 'public')));
@@ -91,6 +104,18 @@ io.on('connection', (socket) => {
 
 // Запуск сервера
 const PORT = 3000;
-server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+server.listen(PORT, async () => {
+    try {
+        await mongoose.connect('mongodb+srv://santi:3Y9NMxs8ERrWB1g0@cluster0.oqajc.mongodb.net/') // Установка соединения с базой данных
+        console.log(`Server is running on http://localhost:${PORT}`);
+    } catch (err) {
+        console.error("Failed to start server due to database connection error.");
+        process.exit(1); // Завершение работы при ошибке подключения
+    }
 });
+
+// process.on('SIGINT', async () => {
+//     console.log("\nShutting down...");
+//     await db.disconnectFromDatabase();
+//     process.exit(0);
+// });
