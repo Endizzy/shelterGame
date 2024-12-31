@@ -201,3 +201,146 @@ body {
 /*    background: #3a3e4c;*/
 /*    !*border: 1px white solid;*!*/
 /*}*/
+
+/* Modal login window*/
+
+/* Стили для модального окна */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+    z-index: 2;
+}
+.regModal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+    z-index: 2;
+}
+
+.modal-content {
+    background-color: #1e2028;
+    margin: 10% auto;
+    padding: 30px;
+    width: 20%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    color: #9ca3af;
+}
+
+.loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+.regForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    background-image: linear-gradient(45deg, #007BFF, #00D4FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.close {
+    color: #aaa;
+    float: right; /* Выставляем крестик с правой стороны */
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.reg__close {
+    color: #aaa;
+    float: right; /* Выставляем крестик с правой стороны */
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.reg__close:hover {
+    color: #fff;
+}
+
+.username__input[type="text"],
+.password__input[type="password"],
+.email__input[type="email"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #3a3e4c;
+    border-radius: 5px;
+    background-color: #2a2d38;
+    color: #9ca3af;
+    /*filter: drop-shadow(5px 5px 5px rgba(251, 3, 3, 0.3));*/
+    box-shadow: 0 0 10px rgb(0, 210, 253, 0.1); /* Равномерная тень */
+}
+
+.login__button {
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    background: linear-gradient(45deg, #007BFF, #00D4FF);
+    transition: all 0.6s ease;
+}
+
+.reg__button {
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    background: linear-gradient(45deg, #007BFF, #00D4FF);
+    /*background-size: 230%; !* Увеличенный размер для эффекта *!*/
+    /*background-position: left; !* Начальное положение *!*/
+    transition: all 0.6s ease;
+}
+
+.registration__button {
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    background: linear-gradient(45deg, #007BFF, #00D4FF);
+    /*background-size: 230%; !* Увеличенный размер для эффекта *!*/
+    /*background-position: left; !* Начальное положение *!*/
+    transition: all 0.6s ease;
+}
+
+.login__button:hover {
+    background: linear-gradient(45deg, #00D4FF, #007BFF); /* Смещаем градиент */
+}
+
+.reg__button:hover {
+    background: linear-gradient(45deg, #00D4FF, #007BFF); /* Смещаем градиент */
+}
+.registration__button:hover {
+    background: linear-gradient(45deg, #00D4FF, #007BFF); /* Смещаем градиент */
+}
+
+body.no-scroll {
+    overflow: hidden; /* Отключает прокрутку */
+}

@@ -23,7 +23,7 @@
                     <a href="#">Information</a>
                 </li>
                 <li class="nav__item">
-                    <a href="#">Login</a>
+                    <a href="#" class="nav__link" id="openLogin" onclick="showLoginForm()">Login</a>
                 </li>
             </ul>
         </div>
@@ -54,6 +54,36 @@
         <!-- Карточки игроков  -->
     </div>
 </div>
+
+<div id="login-form" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Login</h2>
+        <form id="loginForm" class="loginForm" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" class="username__input" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" class="password__input" id="password" name="password" required>
+            <button type="submit" class="login__button" >Login</button>
+            <button id="openRegWindow" class="reg__button" onclick="showRegistrationForm()">Registration</button>
+        </form>
+    </div>
+</div>
+<div id="registration-form" class="regModal">
+    <div class="modal-content">
+        <span class="reg__close">&times;</span>
+        <h2>Registration</h2>
+        <form id="regForm" class="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" class="username__input" id="regUsername" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" class="password__input" id="regPassword" name="password" required>
+            <div id="messageBox"></div>
+            <button type="submit" class="registration__button" >Registration</button>
+        </form>
+    </div>
+</div>
+
 <script src="/server.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
