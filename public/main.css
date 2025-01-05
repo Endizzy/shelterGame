@@ -31,6 +31,10 @@
     color: black;
 }
 
+.card button {
+    margin-right: 10px;
+}
+
 .container {
     max-width: 1170px;
     margin-left: auto;  /* Делаем авто margin в контейнере шапки  */
@@ -179,6 +183,30 @@ body {
 }
 
 .Game__button:active {
+    transform: scale(1); /* Возвращаем размер при нажатии */
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.5); /* Уменьшаем тень */
+}
+/* Lobby buttons */
+.start__game--button {
+    background: linear-gradient(45deg, #007BFF, #00D4FF); /* Градиентный фон */
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 25px; /* Закругленные углы */
+    cursor: pointer; /* Указатель мыши при наведении */
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4); /* Тень кнопки */
+    transition: all 0.3s ease; /* Плавный переход при наведении */
+}
+
+.start__game--button:hover {
+    background: linear-gradient(45deg, #00D4FF, #007BFF); /* Меняем направление градиента */
+    transform: scale(1.1); /* Увеличиваем кнопку */
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.6); /* Усиливаем тень */
+}
+
+.start__game--button:active {
     transform: scale(1); /* Возвращаем размер при нажатии */
     box-shadow: 0 4px 10px rgba(0, 123, 255, 0.5); /* Уменьшаем тень */
 }
@@ -344,3 +372,103 @@ body {
 body.no-scroll {
     overflow: hidden; /* Отключает прокрутку */
 }
+
+/*.user__logout {*/
+/*    color:red;*/
+/*}*/
+/*.user__name {*/
+/*    color:green;*/
+/*    font-weight: bold;*/
+/*    border: #007BFF solid 5px;*/
+/*}*/
+.user__name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: linear-gradient(90deg, #007BFF, #00D4FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.user__name:hover {
+    transform: scale(1.1);
+    text-shadow: 0 0 15px rgba(0, 123, 255, 0.6), 0 0 30px rgba(0, 212, 255, 0.5);
+}
+
+.user__logout {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: linear-gradient(90deg, #FF4500, #FF6347);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.4);
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.user__logout:hover {
+    transform: scale(1.1);
+    text-shadow: 0 0 15px rgba(255, 69, 0, 0.6), 0 0 30px rgba(255, 99, 71, 0.5);
+}
+
+/* Общий стиль для кнопок */
+.button__lobby-kick,
+.button__lobby-admin {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Стиль для кнопки Kick */
+.button__lobby-kick {
+    background: linear-gradient(90deg, #FF6347, #FF4500); /* Красный градиент */
+    color: white;
+    box-shadow: 0 2px 5px rgba(255, 69, 0, 0.3);
+}
+
+.button__lobby-kick:hover {
+    background: linear-gradient(90deg, #FF4500, #FF6347); /* Обратный градиент */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(255, 69, 0, 0.4);
+}
+
+.button__lobby-kick:active {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(255, 69, 0, 0.3);
+}
+
+/* Стиль для кнопки Admin */
+.button__lobby-admin {
+    background: linear-gradient(90deg, #007BFF, #00D4FF); /* Синий градиент */
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+}
+
+.button__lobby-admin:hover {
+    background: linear-gradient(90deg, #00D4FF, #007BFF); /* Обратный градиент */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+}
+
+.button__lobby-admin:active {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+

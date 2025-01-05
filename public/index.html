@@ -14,6 +14,7 @@
         <div class="header__logo">
             <a href="#"><img class="logo" src="/img/logo.png" alt="Shelter"></a>
         </div>
+<!--        <div class="text__user" id="text__user"><a class="user__name" id="user__name" href="#">userName: </a></div>-->
         <div class="nav">
             <ul class="nav__list">
                 <li class="nav__item">
@@ -22,11 +23,24 @@
                 <li class="nav__item">
                     <a href="#">Information</a>
                 </li>
+<!--                <li class="nav__item">-->
+<!--                    <a href="#" id="logout">logout</a>-->
+<!--                </li>-->
+                <li class="text__user" id="text__user" style="display: none;">
+                    <a class="user__name" id="user__name" href="#"></a>
+                </li>
+                <li class="text__logout" id="text__logout" style="display: none;">
+                    <a href="#" class="user__logout" id="logout">Logout</a>
+                </li>
                 <li class="nav__item">
                     <a href="#" class="nav__link" id="openLogin" onclick="showLoginForm()">Login</a>
                 </li>
             </ul>
         </div>
+<!--        <div class="profile">-->
+<!--            <a href="#" class="profile__name">Profile</a>-->
+<!--            <a href="#" class="profile__logout">Logout</a>-->
+<!--        </div>-->
     </div>
 </header>
 <section class="welcome__section">
@@ -53,6 +67,7 @@
     <div class="app__container" id="players-container">
         <!-- Карточки игроков  -->
     </div>
+    <button class="start__game--button">Start Game</button>
 </div>
 
 <div id="login-form" class="modal">
@@ -79,12 +94,12 @@
             <label for="password">Password:</label>
             <input type="password" class="password__input" id="regPassword" name="password" required>
             <div id="messageBox"></div>
-            <button type="submit" class="registration__button" >Registration</button>
+            <button type="submit" class="registration__button">Registration</button>
         </form>
     </div>
 </div>
 
-<script src="/server.js"></script>
+<!--<script src="/server.js"></script>-->
 <script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 

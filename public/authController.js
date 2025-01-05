@@ -23,13 +23,13 @@ class authController {
             const {username, password} = req.body
             const condidate = await User.findOne({username})
             if (condidate) {
-                return res.status(400).json({message: 'User already exists'})
+                return res.status(400).json({message: 'Пользователь уже существует'})
             }
             const hashPassword = bcrypt.hashSync(password, 7);
             const userRole = await Role.findOne({value: "USER"})
             const user = new User({username, password: hashPassword, roles: [userRole.value]})
             await user.save()
-            return res.json({message: 'User  successfully registered'})
+            return res.status(200).json({message: 'Успешная регистрация!'});
         } catch (e) {
             console.log(e)
             res.status(400).json({message:"Registration failed"})
@@ -51,6 +51,22 @@ class authController {
         } catch (e) {
             console.log(e)
             res.status(400).json({message:"Login failed"});
+        }
+    }
+    async verifyToken(req, res) {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+        try {
+            const decoded = jwt.verify(token, secret);
+            const user = await User.findById(decoded.id);
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            res.json({ username: user.username });
+        } catch (error) {
+            res.status(403).json({ message: "Invalid token" });
         }
     }
     async getUsers(req, res) {
