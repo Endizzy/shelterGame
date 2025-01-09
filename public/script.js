@@ -13,6 +13,9 @@ const logoutButton = document.getElementById('logout');
 // Переменные для текущего игрока и сессии
 let playerName = null;
 let currentSessionId = null;
+let currentPlayers = []; // Список текущих игроков
+
+let adminId = null; // ID текущего администратора
 
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('authToken');
@@ -54,6 +57,7 @@ logoutButton.addEventListener('click', () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('username');
     resetNavToDefault();
+    location.reload()
 });
 
 // Функция для сброса навигации к дефолтному состоянию
@@ -138,29 +142,6 @@ window.addEventListener('click', function (event) {
 const registrationForm = document.getElementById('regForm');
 const loginForm = document.getElementById('loginForm');
 const messageBox = document.getElementById('messageBox');
-
-// async function submitRegistrationForm(){
-//     const username = document.getElementById('regUsername').value;
-//     const password = document.getElementById('regPassword').value;
-//
-//     try {
-//         const response = await fetch('/auth/registration', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ username, password }),
-//         });
-//         const data = await response.json();
-//         if (response.ok) {
-//             alert(data.message);
-//             // regModal.style.display = 'none';
-//         } else {
-//             messageBox.textContent = data.message || 'Registration failed';
-//         }
-//     } catch (error) {
-//         messageBox.textContent = 'An error occurred during registration';
-//     }
-// }
-
 
 //Обработчик формы регистрации
 registrationForm.addEventListener('submit', async (event) => {
@@ -294,13 +275,15 @@ joinButton.addEventListener("click", async() => {
 socket.on("gameCreated", ({ sessionId }) => {
     currentSessionId = sessionId; // Обновляем текущую сессию
     alert(`Game created successfully! Session ID: ${sessionId}`);
-    renderPlayers([{ id: socket.id, name: playerName }]); // Отображаем создателя в лобби
+    renderPlayers([{ id: socket.id, name: playerName, isAdmin: true }]); // Отображаем создателя в лобби
     showLobbyId.textContent = `Game ID: ${sessionId}`;
+    adminId = socket.id; // Создатель становится администратором
 });
 
 // Слушатель: обновление списка игроков
 socket.on("updatePlayers", (players) => {
-    renderPlayers(players);
+    currentPlayers = players; // Обновляем список игроков
+    renderPlayers(players);   // Перерисовываем игроков в интерфейсе
 });
 
 // Слушатель: ошибка
@@ -310,17 +293,55 @@ socket.on("error", (message) => {
 
 // Функция для отображения игроков
 function renderPlayers(players) {
+    console.log("Rendering players:", players); // Лог текущего списка игроков
     playersContainer.innerHTML = ""; // Очищаем контейнер перед повторным рендерингом
 
     players.forEach((player) => {
+        console.log("Processing player:", player); // Лог игрока, который обрабатывается
+
         const playerCard = document.createElement("div");
         playerCard.classList.add("card");
         playerCard.innerHTML = `
             <h2>${player.name}</h2>
-            <p>ID: ${player.id}</p>
-            <button class="button__lobby-kick" id="buttonKick">Kick</button>
-            <button class="button__lobby-admin" id="buttonAdmin">Admin</button>
+            <p>ID: ${player.id || "N/A"}</p>
+            ${player.isAdmin ? '<a>Admin</a>' : ''}
+            ${
+                adminId === socket.id && player.id !== socket.id
+                    ? `<button class="button__lobby-kick" data-id="${player.id}">Kick</button>
+                       <button class="button__lobby-admin" data-id="${player.id}">Admin</button>`
+                    : ""
+            }
         `;
-        playersContainer.appendChild(playerCard); // Добавляем карточку игрока в контейнер
+        playersContainer.appendChild(playerCard);
+    });
+
+    // Обработчики кнопок
+    document.querySelectorAll(".button__lobby-kick").forEach(button => {
+        button.addEventListener("click", () => {
+            const playerId = button.getAttribute("data-id");
+            socket.emit("kickPlayer", playerId);
+        });
+    });
+
+    document.querySelectorAll(".button__lobby-admin").forEach(button => {
+        button.addEventListener("click", () => {
+            const playerId = button.getAttribute("data-id");
+            socket.emit("transferAdmin", playerId);
+        });
     });
 }
+
+socket.on("kicked", () => {
+    alert("You have been kicked from the session.");
+    currentSessionId = null; // Сброс текущей сессии
+    currentPlayers = []; // Очистка списка игроков
+    showLobbyId.textContent = ""; // Сброс отображения ID лобби
+    playersContainer.innerHTML = ""; // Очистка игроков из интерфейса
+});
+
+
+// Обновление администратора
+socket.on("updateAdmin", (newAdminId) => {
+    adminId = newAdminId;
+    renderPlayers(currentPlayers); // currentPlayers должен содержать актуальный список игроков
+});
