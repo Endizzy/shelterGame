@@ -3,7 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const authRouter = require('./public/authRouter');
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 // Инициализация приложения
 const app = express();
@@ -11,16 +11,9 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 // Хранение игровых сессий
-const gameSessions = {};
+const gameSessions = {}; // { sessionId: { players: { [socketId]: { name, isAdmin } } } }
 
-// // База данных Oracle
-// const oracledb = require('oracledb');
-// const bcrypt = require('bcrypt');
-// const bodyParser = require('body-parser');
-
-// oracledb.initOracleClient(); // Инициализация клиента Oracle
-
-// Парсер json
+// Парсер JSON
 app.use(express.json());
 app.use("/auth", authRouter);
 
@@ -35,34 +28,33 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Генерация уникального ID для игровой сессии
+function generateSessionId() {
+    return `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// Получение ID сессии по ID сокета
+function getSessionId(socket) {
+    return Object.keys(gameSessions).find(sessionId => gameSessions[sessionId].players[socket.id]);
+}
+
 // Обработка подключений WebSocket
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
     // Создание новой игровой сессии
     socket.on('createGame', (playerName) => {
-        // Удаляем пользователя из предыдущего лобби, если он уже где-то состоит
-        for (const sessionId in gameSessions) {
-            const session = gameSessions[sessionId];
-            session.players = session.players.filter((p) => p.id !== socket.id);
-            io.to(sessionId).emit('updatePlayers', session.players);
-
-            // Если лобби стало пустым, удаляем его
-            if (session.players.length === 0) {
-                delete gameSessions[sessionId];
-                console.log(`Session ${sessionId} deleted because it's empty.`);
-            }
-        }
-
-        // Создаем новую сессию
-        const sessionId = `session-${Date.now()}`;
+        const sessionId = generateSessionId();
         gameSessions[sessionId] = {
-            players: [{ id: socket.id, name: playerName }], // Добавляем создателя
+            players: {
+                [socket.id]: { id: socket.id, name: playerName, isAdmin: true }
+            },
             state: 'waiting',
         };
         socket.join(sessionId);
         socket.emit('gameCreated', { sessionId });
-        io.to(sessionId).emit('updatePlayers', gameSessions[sessionId].players);
+        io.to(sessionId).emit('updatePlayers', Object.values(gameSessions[sessionId].players));
+        io.to(sessionId).emit('updateAdmin', socket.id);
         console.log(`${playerName} created game: ${sessionId}`);
     });
 
@@ -74,31 +66,85 @@ io.on('connection', (socket) => {
         }
 
         const session = gameSessions[sessionId];
-        if (session.players.some((player) => player.id === socket.id)) {
+        if (session.players[socket.id]) {
             socket.emit('error', 'You are already in this session');
             return;
         }
 
-        session.players.push({ id: socket.id, name: playerName });
+        session.players[socket.id] = { id: socket.id, name: playerName, isAdmin: false };
         socket.join(sessionId);
-        io.to(sessionId).emit('updatePlayers', session.players);
+        io.to(sessionId).emit('updatePlayers', Object.values(gameSessions[sessionId].players));
         console.log(`${playerName} joined game: ${sessionId}`);
+    });
+
+    // Исключение игрока
+    socket.on('kickPlayer', (playerId) => {
+        const sessionId = getSessionId(socket);
+        if (!sessionId) return;
+    
+        const session = gameSessions[sessionId];
+        if (!session.players[socket.id]?.isAdmin) {
+            socket.emit('error', 'Only the admin can kick players.');
+            return;
+        }
+    
+        if (session.players[playerId]) {
+            delete session.players[playerId];
+            io.to(playerId).emit('kicked'); // Отправляем уведомление исключённому игроку
+            io.sockets.sockets.get(playerId)?.leave(sessionId); // Исключаем игрока из комнаты
+            io.to(sessionId).emit('updatePlayers', Object.values(gameSessions[sessionId].players)); // Обновляем список игроков
+        }
+    });    
+
+    // Передача прав администратора
+    socket.on('transferAdmin', (newAdminId) => {
+        const sessionId = getSessionId(socket);
+        if (!sessionId) return;
+    
+        const session = gameSessions[sessionId];
+        if (!session.players[socket.id]?.isAdmin) {
+            socket.emit('error', 'Only the admin can transfer admin rights.');
+            return;
+        }
+    
+        if (session.players[newAdminId]) {
+            Object.values(session.players).forEach(player => player.isAdmin = false);
+            session.players[newAdminId].isAdmin = true;
+            io.to(sessionId).emit('updateAdmin', newAdminId); // Обновляем администратора
+            io.to(sessionId).emit('updatePlayers', Object.values(gameSessions[sessionId].players));
+        }
     });
 
     // Обработка отключения игрока
     socket.on('disconnect', () => {
-        for (const sessionId in gameSessions) {
-            const session = gameSessions[sessionId];
-            session.players = session.players.filter((p) => p.id !== socket.id);
-            io.to(sessionId).emit('updatePlayers', session.players);
+        const sessionId = getSessionId(socket);
+        if (!sessionId) return;
 
-            // Удаляем лобби, если оно стало пустым
-            if (session.players.length === 0) {
-                delete gameSessions[sessionId];
-                console.log(`Session ${sessionId} deleted because it's empty.`);
-            }
+        const session = gameSessions[sessionId];
+        const wasAdmin = session.players[socket.id]?.isAdmin;
+        delete session.players[socket.id];
+
+        // Если админ отключился, передать права другому игроку
+        if (wasAdmin && Object.keys(session.players).length > 0) {
+            const newAdminId = Object.keys(session.players)[0];
+            session.players[newAdminId].isAdmin = true;
+            io.to(sessionId).emit('updateAdmin', newAdminId);
         }
+
+        io.to(sessionId).emit('updatePlayers', Object.values(session.players));
+
+        // Удалить лобби, если оно пустое
+        if (Object.keys(session.players).length === 0) {
+            delete gameSessions[sessionId];
+            console.log(`Session ${sessionId} deleted because it's empty.`);
+        }
+
         console.log('A user disconnected:', socket.id);
+    });
+
+    // Уведомление исключенного игрока
+    socket.on('kicked', () => {
+        socket.emit('error', 'You have been kicked from the session.');
     });
 });
 
@@ -106,16 +152,10 @@ io.on('connection', (socket) => {
 const PORT = 3000;
 server.listen(PORT, async () => {
     try {
-        await mongoose.connect('mongodb+srv://santi:3Y9NMxs8ERrWB1g0@cluster0.oqajc.mongodb.net/') // Установка соединения с базой данных
-        console.log(`Server is running on http://localhost:${PORT}`);
+        await mongoose.connect('mongodb+srv://santi:3Y9NMxs8ERrWB1g0@cluster0.oqajc.mongodb.net/'); // Установка соединения с базой данных
+        console.log(`Server is running on http://192.168.52.103:${PORT}`);
     } catch (err) {
         console.error("Failed to start server due to database connection error.");
         process.exit(1); // Завершение работы при ошибке подключения
     }
 });
-
-// process.on('SIGINT', async () => {
-//     console.log("\nShutting down...");
-//     await db.disconnectFromDatabase();
-//     process.exit(0);
-// });

@@ -12,6 +12,7 @@
 }
 
 .card {
+    display:block;
     border: 1px solid #ccc;
     padding: 15px;
     margin: 10px;
@@ -29,6 +30,22 @@
 .card p {
     margin: 5px 0;
     color: black;
+}
+
+.card a {
+    display: block;
+    text-align: right;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: linear-gradient(90deg, #FF4500, #FF6347);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.4);
 }
 
 .card button {
