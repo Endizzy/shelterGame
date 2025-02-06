@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="main.css">
+    <title>Lobby</title>
+</head>
+<body>
+<header class="header">
+    <div class="header__container">
+        <div class="header__logo">
+            <a href="#"><img class="logo" src="/img/logo.png" alt="Shelter"></a>
+        </div>
+        <!--        <div class="text__user" id="text__user"><a class="user__name" id="user__name" href="#">userName: </a></div>-->
+        <div class="nav">
+            <ul class="nav__list">
+                <li class="nav__item">
+                    <a href="index.html">Play</a>
+                </li>
+                <li class="nav__item">
+                    <a href="#">Information</a>
+                </li>
+                <!--                <li class="nav__item">-->
+                <!--                    <a href="#" id="logout">logout</a>-->
+                <!--                </li>-->
+                <li class="text__user" id="text__user" style="display: none;">
+                    <a class="user__name" id="user__name" href="#"></a>
+                </li>
+                <li class="text__logout" id="text__logout" style="display: none;">
+                    <a href="#" class="user__logout" id="logout">Logout</a>
+                </li>
+                <li class="nav__item">
+                    <a href="#" class="nav__link" id="openLogin" onclick="showLoginForm()">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+<div class="app" id="app">
+    <div class="lobby-card">
+        <h1 id="lobbyHeader">Welcome to Game Lobby </h1>
+        <h1 class="lobby-name__lobby" id="lobbyName"></h1>
+        <div class="sessionCode">
+            <p id="session-id-display"></p>
+            <a href="#"><img class="Copy__to--buffer" id="copyToBuffer" src="/img/ggg.png" alt="copy" onclick="copyToClipboard()"></a>
+        </div>
+    <!--    <p id="session-id-display"></p>-->
+        <p class="players__count" id="playersCount"></p>
+        <div class="app__container" id="players-container">
+            <!-- Карточки игроков  -->
+        </div>
+        <button class="start__game--button">Start Game</button>
+    </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="lobby.js"></script>
+</body>
+</html>

@@ -13,6 +13,9 @@ const logoutButton = document.getElementById('logout');
 // Переменные для текущего игрока и сессии
 let playerName = null;
 let currentSessionId = null;
+let currentPlayers = []; // Список текущих игроков
+
+let adminId = null; // ID текущего администратора
 
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('authToken');
@@ -20,6 +23,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userNameLink = document.getElementById('user__name');
     const loginLink = document.getElementById('openLogin');
     const logoutLink = document.getElementById('text__logout');
+    fetchUserCount()
+    fetchLobbies()
 
     if (token) {
         try {
@@ -54,6 +59,7 @@ logoutButton.addEventListener('click', () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('username');
     resetNavToDefault();
+    location.reload()
 });
 
 // Функция для сброса навигации к дефолтному состоянию
@@ -139,29 +145,6 @@ const registrationForm = document.getElementById('regForm');
 const loginForm = document.getElementById('loginForm');
 const messageBox = document.getElementById('messageBox');
 
-// async function submitRegistrationForm(){
-//     const username = document.getElementById('regUsername').value;
-//     const password = document.getElementById('regPassword').value;
-//
-//     try {
-//         const response = await fetch('/auth/registration', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ username, password }),
-//         });
-//         const data = await response.json();
-//         if (response.ok) {
-//             alert(data.message);
-//             // regModal.style.display = 'none';
-//         } else {
-//             messageBox.textContent = data.message || 'Registration failed';
-//         }
-//     } catch (error) {
-//         messageBox.textContent = 'An error occurred during registration';
-//     }
-// }
-
-
 //Обработчик формы регистрации
 registrationForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -221,87 +204,113 @@ closeRegButton.addEventListener('click', () => {
     regInputs.forEach(input => input.value = '');
 });
 
+async function fetchUserCount() {
+    try {
+        const response = await fetch("/auth/user-count");
+        const data = await response.json();
+        document.getElementById("user-count").textContent = `${data.count} человек`;
+    } catch (error) {
+        console.error("Ошибка получения данных:", error);
+        document.getElementById("user-count").textContent = "Ошибка";
+    }
+}
+
 
 // Событие для создания игры
-startButton.addEventListener("click", async() => {
-    const token = localStorage.getItem('authToken');
+startButton.addEventListener("click", async () => {
+    const token = localStorage.getItem("authToken");
     if (!token) {
         alert("Вы должны быть авторизованы для создания игры");
         return;
     }
-    if (token) {
-        try {
-            const response = await fetch('/auth/verify', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                playerName = data.username;
-                socket.emit("createGame", playerName);
-            } else {
-                console.error('Token verification failed');
-                localStorage.removeItem('authToken');
+
+    try {
+        const response = await fetch("/auth/verify", {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const lobbyName = prompt("Введите название лобби: ");
+            if (lobbyName.length === 0 || lobbyName.length > 60) {
+                alert("Ошибка название не должно быть пустым или длиннее 40 символов")
+                return;
             }
-        } catch (error) {
-            console.error('Error verifying token:', error);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("lobbyName", lobbyName); // Сохраняем в локальное хранилище
+            console.log(lobbyName);
+            console.log(`📤 Отправка запроса на создание игры для ${data.username}`);
+            socket.emit("createGame", { playerName: data.username, lobbyName });
+        } else {
+            console.error("Ошибка проверки токена");
+            localStorage.removeItem("authToken");
         }
+    } catch (error) {
+        console.error("Ошибка при верификации токена:", error);
     }
 });
 
 
 
 // Событие для подключения к игре
-joinButton.addEventListener("click", async() => {
-    const sessionId = sessionIdInput.value.trim(); // Получаем введенный ID сессии
-    const token = localStorage.getItem('authToken');
+joinButton.addEventListener("click", async () => {
+    const sessionId = sessionIdInput.value.trim();
+    const token = localStorage.getItem("authToken");
+
+    if (!sessionId) {
+        alert("Введите корректный ID сессии");
+        return;
+    }
     if (!token) {
         alert("Вы должны быть авторизованы");
         return;
     }
-    if (token) {
-        try {
-            const response = await fetch('/auth/verify', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                playerName = data.username;
-            } else {
-                console.error('Token verification failed');
-                localStorage.removeItem('authToken');
-            }
-        } catch (error) {
-            console.error('Error verifying token:', error);
+
+    try {
+        // Проверяем, существует ли такая сессия
+        const sessionCheckResponse = await fetch(`/auth/checkSession/${sessionId}`);
+        const sessionCheckData = await sessionCheckResponse.json();
+
+        if (!sessionCheckResponse.ok || !sessionCheckData.exists) {
+            alert("Ошибка: указанная игровая сессия не существует!");
+            return;
         }
-        if (sessionId && playerName) {
-            socket.emit("joinGame", { sessionId, playerName }); // Отправляем запрос на подключение
+        const response = await fetch("/auth/verify", {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("sessionId", sessionId);
+            localStorage.setItem("isAdmin","false");
+            window.location.href = "lobby.html";
         } else {
-            alert("Please enter a valid session ID and your name.");
+            console.error("Ошибка проверки токена");
+            localStorage.removeItem("authToken");
         }
-        showLobbyId.textContent = `Game ID: ${sessionId}`;
+    } catch (error) {
+        console.error("Ошибка при верификации токена:", error);
     }
 });
 
 // Слушатель: подтверждение создания игры
+// Слушатель: подтверждение создания игры
 socket.on("gameCreated", ({ sessionId }) => {
-    currentSessionId = sessionId; // Обновляем текущую сессию
-    alert(`Game created successfully! Session ID: ${sessionId}`);
-    renderPlayers([{ id: socket.id, name: playerName }]); // Отображаем создателя в лобби
-    showLobbyId.textContent = `Game ID: ${sessionId}`;
+    localStorage.setItem("sessionId", sessionId);
+    localStorage.setItem("isAdmin", "true"); // Создатель автоматически становится админом
+    localStorage.setItem("oldSocketId", socket.id); // Сохраняем старый ID
+    console.log(`📥 Сохранили старый socket.id: ${socket.id}`);
+    window.location.href = "lobby.html";
 });
 
-// Слушатель: обновление списка игроков
-socket.on("updatePlayers", (players) => {
-    renderPlayers(players);
-});
+// Слушатель: обновление списка игроков NEWNEW
+// socket.on("updatePlayers", (players) => {
+//     currentPlayers = players; // Обновляем список игроков
+//     renderPlayers(players);   // Перерисовываем игроков в интерфейсе
+// });
 
 // Слушатель: ошибка
 socket.on("error", (message) => {
@@ -310,17 +319,122 @@ socket.on("error", (message) => {
 
 // Функция для отображения игроков
 function renderPlayers(players) {
+    console.log("Rendering players:", players); // Лог текущего списка игроков
     playersContainer.innerHTML = ""; // Очищаем контейнер перед повторным рендерингом
 
     players.forEach((player) => {
+        console.log("Processing player:", player); // Лог игрока, который обрабатывается
+
         const playerCard = document.createElement("div");
         playerCard.classList.add("card");
         playerCard.innerHTML = `
             <h2>${player.name}</h2>
-            <p>ID: ${player.id}</p>
-            <button class="button__lobby-kick" id="buttonKick">Kick</button>
-            <button class="button__lobby-admin" id="buttonAdmin">Admin</button>
+            <p>ID: ${player.id || "N/A"}</p>
+            ${player.isAdmin ? '<a>Admin</a>' : ''}
+            ${
+                adminId === socket.id && player.id !== socket.id
+                    ? `<button class="button__lobby-kick" data-id="${player.id}">Kick</button>
+                       <button class="button__lobby-admin" data-id="${player.id}">Admin</button>`
+                    : ""
+            }
         `;
-        playersContainer.appendChild(playerCard); // Добавляем карточку игрока в контейнер
+        playersContainer.appendChild(playerCard);
     });
+
+    // Обработчики кнопок
+    document.querySelectorAll(".button__lobby-kick").forEach(button => {
+        button.addEventListener("click", () => {
+            const playerId = button.getAttribute("data-id");
+            socket.emit("kickPlayer", playerId);
+        });
+    });
+
+    document.querySelectorAll(".button__lobby-admin").forEach(button => {
+        button.addEventListener("click", () => {
+            const playerId = button.getAttribute("data-id");
+            socket.emit("transferAdmin", playerId);
+        });
+    });
+}
+
+socket.on("kicked", () => {
+    alert("You have been kicked from the session.");
+    currentSessionId = null; // Сброс текущей сессии
+    currentPlayers = []; // Очистка списка игроков
+    showLobbyId.textContent = ""; // Сброс отображения ID лобби
+    playersContainer.innerHTML = ""; // Очистка игроков из интерфейса
+});
+
+
+// Обновление администратора
+socket.on("updateAdmin", (newAdminId) => {
+    adminId = newAdminId;
+    renderPlayers(currentPlayers); // currentPlayers должен содержать актуальный список игроков
+});
+
+async function fetchLobbies() {
+    try {
+        const response = await fetch('/getActiveLobbies');
+        const lobbies = await response.json();
+        renderLobbies(lobbies);
+    } catch (error) {
+        console.error("Ошибка при загрузке списка лобби:", error);
+    }
+}
+
+function renderLobbies(lobbies) {
+    const lobbyListContainer = document.getElementById('lobby-list');
+    lobbyListContainer.innerHTML = '';
+
+    if (lobbies.length === 0) {
+        lobbyListContainer.innerHTML = '<p>Нет активных лобби</p>';
+        return;
+    }
+
+    lobbies.forEach(lobby => {
+        const lobbyCard = document.createElement('div');
+        lobbyCard.classList.add('lobby-card');
+        lobbyCard.innerHTML = `
+            <p class="lobby-name"> ${lobby.lobbyName}</p>
+            <p><strong>Session ID:</strong> ${lobby.sessionId}</p>
+            <p><strong>Игроки:</strong> ${lobby.playersCount} / ${lobby.maxPlayers}</p>
+            <button class="join-lobby-button" data-session="${lobby.sessionId}">Подключиться</button>
+        `;
+        lobbyListContainer.appendChild(lobbyCard);
+    });
+
+    document.querySelectorAll('.join-lobby-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const sessionId = event.target.getAttribute('data-session');
+            joinGame(sessionId);
+        });
+    });
+}
+async function joinGame(sessionId) {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+        alert("Вы должны быть авторизованы");
+        return;
+    }
+
+    try {
+        const response = await fetch("/auth/verify", {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("sessionId", sessionId);
+            localStorage.setItem("isAdmin", "false");
+            window.location.href = "lobby.html";
+        } else {
+            console.error("Ошибка проверки токена");
+            localStorage.removeItem("authToken");
+        }
+    } catch (error) {
+        console.error("Ошибка при верификации токена:", error);
+    }
 }

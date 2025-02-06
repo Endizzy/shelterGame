@@ -6,18 +6,77 @@
     background-color: #252529;
 }
 
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #252529;
+    color: white;
+    margin: 0;
+    padding: 10px;
+}
+
+.footer__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+
+    max-width: 1170px;
+    margin-left: auto;  /* Делаем авто margin в контейнере шапки  */
+    margin-right: auto;
+    padding: 5px 0; /* Отступ с верху и с низу */
+}
+
+
 #app {
     margin: 20px auto;
     max-width: 600px;
 }
+.app {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+}
+
+.sessionCode {
+    display: flex;
+    /*vertical-align: middle;*/
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    gap: 6px;
+
+}
+
+.Copy__to--buffer {
+    margin-top: 28px;
+    margin-bottom: 20px;
+}
+
+.Copy__to--buffer:hover {
+    scale: 1.2;
+}
+
+.Copy__to--buffer:active {
+    scale: 1;
+}
+
+.app #playersCount  {
+    text-align: center;
+}
 
 .card {
+    display:block;
     border: 1px solid #ccc;
     padding: 15px;
     margin: 10px;
     border-radius: 8px;
     background: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
 }
 
 .card h2 {
@@ -29,6 +88,22 @@
 .card p {
     margin: 5px 0;
     color: black;
+}
+
+.card a {
+    display: block;
+    text-align: right;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: linear-gradient(90deg, #FF4500, #FF6347);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.4);
 }
 
 .card button {
@@ -78,6 +153,11 @@ h1,h2,h3,h4,h5,h6 {
 .logo {
     width: auto;
     height: 70px;
+}
+
+.Copy__to--buffer {
+    width: 20px;
+    height: 20px;
 }
 
 ul.nav__list {
@@ -472,3 +552,110 @@ body.no-scroll {
     box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
 }
 
+.players__count {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 5px 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 114, 255, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: right;
+    gap: 10px;
+    border: 2px solid rgba(0, 114, 255, 0.4);
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    margin: 0;
+}
+
+/* Анимация при изменении количества игроков */
+.players__count.updated {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 114, 255, 0.5);
+    animation: pulse 0.5s ease-in-out;
+}
+
+/* Плавное свечение при обновлении */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.lobby-list-section {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+    background: #2a2d38;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 114, 255, 0.3);
+    text-align: center;
+}
+
+.lobby-card {
+    border: 2px solid #007BFF;
+    background: #3a3e4c;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+.lobby-card p {
+    margin: 5px 0;
+}
+
+.join-lobby-button {
+    background: linear-gradient(45deg, #007BFF, #00D4FF);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.join-lobby-button:hover {
+    background: linear-gradient(45deg, #00D4FF, #007BFF);
+    transform: scale(1.1);
+}
+
+.lobby-card .lobby-name {
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #ffd700; /* Золотой цвет для акцента */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.8), 0 0 12px rgba(255, 165, 0, 0.5); /* Неоновый эффект */
+    border-bottom: 2px solid rgba(255, 215, 0, 0.6); /* Подчеркивание */
+    padding-bottom: 5px;
+    display: inline-block;
+    letter-spacing: 1px; /* Небольшое раздвижение букв */
+}
+
+.lobby-name {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.lobby-name__lobby {
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #ffd700; /* Золотой цвет для акцента */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.8), 0 0 12px rgba(255, 165, 0, 0.5); /* Неоновый эффект */
+    display: inline-block;
+    letter-spacing: 1px; /* Небольшое раздвижение букв */
+}

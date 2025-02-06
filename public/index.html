@@ -37,10 +37,6 @@
                 </li>
             </ul>
         </div>
-<!--        <div class="profile">-->
-<!--            <a href="#" class="profile__name">Profile</a>-->
-<!--            <a href="#" class="profile__logout">Logout</a>-->
-<!--        </div>-->
     </div>
 </header>
 <section class="welcome__section">
@@ -61,14 +57,14 @@
         </div>
     </div>
 </section>
-<div class="app" id="app">
-    <h1>Welcome to Game Lobby </h1>
-    <p id="session-id-display"></p>
-    <div class="app__container" id="players-container">
-        <!-- Карточки игроков  -->
-    </div>
-    <button class="start__game--button">Start Game</button>
-</div>
+<!--<div class="app" id="app">-->
+<!--    <h1>Welcome to Game Lobby </h1>-->
+<!--    <p id="session-id-display"></p>-->
+<!--    <div class="app__container" id="players-container">-->
+<!--        &lt;!&ndash; Карточки игроков  &ndash;&gt;-->
+<!--    </div>-->
+<!--    <button class="start__game&#45;&#45;button">Start Game</button>-->
+<!--</div>-->
 
 <div id="login-form" class="modal">
     <div class="modal-content">
@@ -98,10 +94,23 @@
         </form>
     </div>
 </div>
+<section class="lobby-list-section">
+    <h2>Активные лобби</h2>
+    <div id="lobby-list">
+        <p>Загрузка...</p>
+    </div>
+</section>
 
 <!--<script src="/server.js"></script>-->
 <script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 
 </body>
+<footer class="footer">
+    <div class="footer__container">
+        <div class="footer__content">
+            <p>У нас играют уже <span id="user-count">Загрузка...</span></p>
+        </div>
+    </div>
+</footer>
 </html>
